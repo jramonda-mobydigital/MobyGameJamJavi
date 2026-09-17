@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Moby Game Jam</title>
+  <meta name="description" content="Moby Game Jam" />
+  <link rel="icon" href="assets/whale.png" type="image/png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="stage" data-node-id="9:2">
+    <!-- Ellipse 2 — halo superior difuminado -->
+    <img class="glow" src="assets/glow.svg" alt="" aria-hidden="true" data-node-id="20:6" />
+
+    <!-- Untitled_Artwork 1 + ojos + boca -->
+    <div class="whale" data-node-id="36:31">
+      <!-- El cuerpo se estira cuando se abre la boca; envuelve a todas las
+           capas para que ojos y boca acompanen al dibujo -->
+      <div class="whale__body">
+        <img class="whale__art" src="assets/whale.png" alt="Ballena de Moby Game Jam" data-node-id="20:21" />
+
+        <!-- Cavidad y lengua. El labio superior lo pone el propio PNG. -->
+        <svg class="whale__mouth" viewBox="0 0 432 408" aria-hidden="true" focusable="false">
+          <defs>
+            <clipPath id="moby-mouth-clip"><path d="" /></clipPath>
+          </defs>
+          <path class="whale__cavity" d="" />
+          <g clip-path="url(#moby-mouth-clip)">
+            <ellipse class="whale__tongue" cx="0" cy="0" rx="0" ry="0" />
+          </g>
+        </svg>
+
+        <img class="whale__eye whale__eye--left" src="assets/eye-left.svg" alt="" aria-hidden="true" data-node-id="36:30" />
+        <img class="whale__eye whale__eye--right" src="assets/eye-right.svg" alt="" aria-hidden="true" data-node-id="36:29" />
+      </div>
+    </div>
+
+    <!-- Sticker de medialuna (94:220): borde blanco + dibujo.
+         Las dos capas viven dentro del mismo contenedor arrastrable, asi
+         viajan juntas cuando se la lleva a la boca. -->
+    <div class="croissant" data-node-id="94:220">
+      <img class="croissant__edge" src="assets/croissant-edge.svg" alt="" aria-hidden="true" data-node-id="94:221" />
+      <img class="croissant__art" src="assets/croissant.png" alt="Medialuna" draggable="false" data-node-id="94:223" />
+    </div>
+
+    <!-- Stickers decorativos -->
+    <img class="sticker sticker--coffee" src="assets/coffee.svg" alt="" aria-hidden="true" data-node-id="93:177" />
+    <img class="sticker sticker--logo" src="assets/logo.svg" alt="" aria-hidden="true" data-node-id="36:26" />
+  </main>
+
+  <script src="mouth.js"></script>
+  <script src="eyes.js"></script>
+  <script src="feed.js"></script>
+</body>
+</html>
