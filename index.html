@@ -10,6 +10,18 @@
 </head>
 <body>
   <main class="stage" data-node-id="9:2">
+    <!-- Contador de cuantos comio la ballena de cada cosa -->
+    <div class="hud">
+      <span class="hud__item"><img src="assets/croissant.png" alt="Medialunas comidas" /><span class="hud__count" data-count="croissant">0</span></span>
+      <span class="hud__item"><img src="assets/coffee.svg" alt="Cafes comidos" /><span class="hud__count" data-count="coffee">0</span></span>
+      <span class="hud__item"><img src="assets/logo.svg" alt="Logos comidos" /><span class="hud__count" data-count="logo">0</span></span>
+    </div>
+
+    <!-- Fondo que se desplaza solo, para dar sensacion de avance tipo
+         side-scroller aunque la ballena este quieta -->
+    <div class="bg-scroll bg-scroll--far" aria-hidden="true"></div>
+    <div class="bg-scroll bg-scroll--near" aria-hidden="true"></div>
+
     <!-- Ellipse 2 — halo superior difuminado -->
     <img class="glow" src="assets/glow.svg" alt="" aria-hidden="true" data-node-id="20:6" />
 
@@ -37,20 +49,33 @@
     </div>
 
     <!-- Sticker de medialuna (94:220): borde blanco + dibujo.
-         Las dos capas viven dentro del mismo contenedor arrastrable, asi
-         viajan juntas cuando se la lleva a la boca. -->
+         Las dos capas viven dentro del mismo contenedor comestible: la
+         ballena se lo come al tocarlo (ver movement.js/feed.js). -->
     <div class="croissant" data-node-id="94:220">
       <img class="croissant__edge" src="assets/croissant-edge.svg" alt="" aria-hidden="true" data-node-id="94:221" />
       <img class="croissant__art" src="assets/croissant.png" alt="Medialuna" draggable="false" data-node-id="94:223" />
     </div>
 
-    <!-- Stickers decorativos -->
+    <!-- Stickers comestibles: la ballena tambien se los come al tocarlos -->
     <img class="sticker sticker--coffee" src="assets/coffee.svg" alt="" aria-hidden="true" data-node-id="93:177" />
     <img class="sticker sticker--logo" src="assets/logo.svg" alt="" aria-hidden="true" data-node-id="36:26" />
   </main>
 
+  <!-- Pantalla de susto: aparece cuando la ballena come el logo 3 veces -->
+  <div class="jumpscare" id="jumpscare" hidden>
+    <img class="jumpscare__logo" src="assets/icbc.svg" alt="Logo de ICBC" />
+    <p class="jumpscare__message">Perdiste tu d&iacute;a<br />intentando conectar a la VPN</p>
+    <div class="sad-whale" aria-hidden="true">
+      <img src="assets/whale.png" alt="" />
+      <span class="sad-whale__tear sad-whale__tear--left"></span>
+      <span class="sad-whale__tear sad-whale__tear--right"></span>
+    </div>
+    <p class="jumpscare__hint">Presion&aacute; <kbd>Enter</kbd> para comenzar de nuevo</p>
+  </div>
+
   <script src="mouth.js"></script>
   <script src="eyes.js"></script>
   <script src="feed.js"></script>
+  <script src="movement.js"></script>
 </body>
 </html>

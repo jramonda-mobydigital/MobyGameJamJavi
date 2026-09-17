@@ -43,6 +43,80 @@ body {
   );
 }
 
+/* --- Contador de comidas --------------------------------------------------
+   Cuanto comio la ballena de cada cosa (ver movement.js). */
+.hud {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top, 0px));
+  left: 16px;
+  z-index: 5;
+  display: flex;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.hud__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(3, 31, 57, 0.55);
+  backdrop-filter: blur(2px);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.hud__item img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* --- Fondo animado (estilo 2D / side-scroller) ---------------------------
+   Dos capas de burbujas que se desplazan solas en bucle infinito (el
+   tile se repite y el loop del keyframe dura exactamente un tile de
+   ancho), para dar sensacion de avance constante tipo Mario Bros aunque
+   la ballena este quieta. La capa "near" es mas grande y rapida, como
+   primer plano; "far" queda mas atras, chica y lenta. */
+.bg-scroll {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+}
+
+.bg-scroll--far {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Ccircle cx='60' cy='340' r='18' fill='white' fill-opacity='0.5'/%3E%3Ccircle cx='220' cy='120' r='10' fill='white' fill-opacity='0.4'/%3E%3Ccircle cx='340' cy='260' r='24' fill='white' fill-opacity='0.35'/%3E%3Ccircle cx='150' cy='380' r='7' fill='white' fill-opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 420px 420px;
+  opacity: 0.35;
+  animation: bg-scroll-far 46s linear infinite;
+}
+
+.bg-scroll--near {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Ccircle cx='40' cy='210' r='14' fill='white' fill-opacity='0.55'/%3E%3Ccircle cx='150' cy='60' r='9' fill='white' fill-opacity='0.45'/%3E%3Ccircle cx='210' cy='180' r='20' fill='white' fill-opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 260px 260px;
+  opacity: 0.5;
+  animation: bg-scroll-near 22s linear infinite;
+}
+
+@keyframes bg-scroll-far {
+  from { background-position: 0 0; }
+  to { background-position: -420px 0; }
+}
+
+@keyframes bg-scroll-near {
+  from { background-position: 0 0; }
+  to { background-position: -260px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-scroll {
+    animation: none;
+  }
+}
+
 /* --- Halo (Ellipse 2) ---------------------------------------------------
    En Figma el SVG ocupa 2089.6 x 1378.6 en (-324.8, -830.8) sobre el frame
    de 1440 x 1024. Se traduce a porcentajes del stage. */
@@ -62,7 +136,10 @@ body {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  /* --move-x/--move-y: posicion de juego de la ballena, controlada con
+     las flechas del teclado (ver movement.js). Se suma a su posicion
+     base (el centro del stage), sin tocarla. */
+  transform: translate(calc(-50% + var(--move-x, 0px)), calc(-50% + var(--move-y, 0px)));
   width: var(--whale-size);
   aspect-ratio: var(--whale-w) / var(--whale-h);
   transform-origin: 50% 60%;
@@ -152,9 +229,9 @@ body {
    Se expresa como offset desde el centro de la ballena para que la
    composicion se mantenga igual en cualquier tamano.
 
-   Reparto de responsabilidades para que el arrastre no tenga lag:
-   el contenedor solo traslada (sin transicion mientras se lo sostiene) y
-   la imagen interior se ocupa de la rotacion y la escala. */
+   --cr-dx/--cr-dy son su posicion de diseno (fija); --move-x/--move-y es
+   donde vive ahora en el juego (la reubica movement.js cuando la ballena
+   se la come, ver mas abajo). */
 .croissant {
   position: absolute;
   filter: drop-shadow(-4px 8px 10px rgba(0, 0, 0, 0.22));
@@ -164,10 +241,8 @@ body {
   aspect-ratio: 193.54 / 170.19;
   --cr-dx: calc(var(--whale-size) * 0.8373);
   --cr-dy: calc(var(--whale-size) * 0.197);
-  transform: translate(calc(-50% + var(--cr-dx)), calc(-50% + var(--cr-dy)));
-  cursor: grab;
-  touch-action: none;
-  -webkit-user-select: none;
+  transform: translate(calc(-50% + var(--cr-dx) + var(--move-x, 0px)), calc(-50% + var(--cr-dy) + var(--move-y, 0px)));
+  pointer-events: none;
   user-select: none;
   z-index: 2;
 }
@@ -195,31 +270,7 @@ body {
   pointer-events: none;
 }
 
-.croissant.is-held {
-  cursor: grabbing;
-  z-index: 3;
-}
-
-.croissant.is-held .croissant__art {
-  --cr-scale: 1.08;
-}
-
-/* Cerca de la boca: se achica un poco para anticipar el mordisco */
-.croissant.is-over-mouth .croissant__art {
-  --cr-scale: 0.9;
-}
-
-/* Al soltarlo lejos, vuelve solo a su lugar del diseno */
-.croissant.is-returning {
-  transition: transform 420ms cubic-bezier(0.34, 1.3, 0.64, 1);
-}
-
-/* Se lo devora: el contenedor viaja a la boca y la imagen se desvanece */
-.croissant.is-eaten {
-  transition: transform 240ms cubic-bezier(0.5, 0, 0.9, 0.4);
-  pointer-events: none;
-}
-
+/* Se lo devora: se achica y se desvanece en el lugar donde lo toco */
 .croissant.is-eaten .croissant__art {
   transition: transform 240ms ease-in, opacity 200ms ease-in 60ms;
   --cr-scale: 0.1;
@@ -240,9 +291,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .croissant,
-  .croissant.is-returning,
-  .croissant.is-eaten,
   .croissant__art,
   .croissant.is-eaten .croissant__art {
     transition-duration: 1ms;
@@ -250,15 +298,37 @@ body {
 }
 
 
-/* --- Stickers decorativos ------------------------------------------------
+/* --- Stickers: cafe y logo, tambien comestibles ---------------------------
    Se ubican en fracciones del stage, como en el frame, pero se miden contra
-   --whale-size para que la composicion mantenga sus proporciones. */
+   --whale-size para que la composicion mantenga sus proporciones.
+   --move-x/--move-y es donde los reubica movement.js cuando la ballena se
+   los come (misma logica que el croissant). */
 .sticker {
   position: absolute;
-  transform: translate(-50%, -50%);
+  transform: translate(calc(-50% + var(--move-x, 0px)), calc(-50% + var(--move-y, 0px)))
+    scale(var(--eat-scale, 1));
   pointer-events: none;
   user-select: none;
   z-index: 1;
+  transition: transform 240ms ease-in, opacity 200ms ease-in 60ms;
+}
+
+/* Se lo devora: se achica y se desvanece en el lugar donde lo toco */
+.sticker.is-eaten {
+  --eat-scale: 0.1;
+  opacity: 0;
+}
+
+/* Oculto mientras se reubica; al quitarse la clase reaparece en su nuevo lugar */
+.sticker.is-hidden {
+  opacity: 0;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticker {
+    transition-duration: 1ms;
+  }
 }
 
 /* image 11 [Vectorized] (36:26): 162 x 162 centrado en (313, 184) */
@@ -295,5 +365,135 @@ body {
     left: 16%;
     top: 88%;
     width: calc(var(--whale-size) * 0.24);
+  }
+}
+
+/* --- Pantalla de susto (3 logos comidos) ----------------------------------
+   Ver movement.js: al llegar a 3 se saca el "hidden" y arranca el flash. */
+.jumpscare {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 3vh, 28px);
+  padding: 24px;
+  text-align: center;
+  background: #b90f14;
+  color: #fff;
+  animation: jumpscare-flash 0.45s steps(2) 4, jumpscare-shake 0.4s ease-in-out 1;
+}
+
+.jumpscare[hidden] {
+  display: none;
+}
+
+.jumpscare__logo {
+  width: min(70vw, 280px);
+  filter: drop-shadow(0 0 26px rgba(255, 255, 255, 0.55));
+  background: #fff;
+  padding: 14px 20px;
+  border-radius: 10px;
+  animation: jumpscare-pop 420ms cubic-bezier(0.22, 1.6, 0.4, 1);
+}
+
+.jumpscare__message {
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(20px, 4.2vw, 34px);
+  line-height: 1.25;
+  text-transform: uppercase;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  max-width: 720px;
+}
+
+.jumpscare__hint {
+  margin: 0;
+  font-size: clamp(14px, 2.4vw, 18px);
+  opacity: 0.9;
+}
+
+.jumpscare__hint kbd {
+  background: #fff;
+  color: #b90f14;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 6px;
+  font-family: inherit;
+}
+
+@keyframes jumpscare-flash {
+  0%, 100% { background: #b90f14; }
+  50% { background: #ff2c2c; }
+}
+
+@keyframes jumpscare-shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-10px, 5px); }
+  40% { transform: translate(9px, -6px); }
+  60% { transform: translate(-7px, -7px); }
+  80% { transform: translate(7px, 7px); }
+}
+
+@keyframes jumpscare-pop {
+  from { transform: scale(0.15); opacity: 0; }
+  65% { transform: scale(1.15); opacity: 1; }
+  to { transform: scale(1); }
+}
+
+/* Ballena triste, para la pantalla de susto: mismo PNG, desaturado e
+   inclinado, con un par de lagrimas cayendo en bucle. */
+.sad-whale {
+  position: relative;
+  width: min(34vw, 160px);
+  filter: grayscale(0.85) brightness(0.82);
+  transform: rotate(-7deg);
+}
+
+.sad-whale img {
+  display: block;
+  width: 100%;
+}
+
+.sad-whale__tear {
+  position: absolute;
+  width: 7px;
+  height: 11px;
+  background: #7fd0ff;
+  border-radius: 0 60% 60% 60%;
+  transform: rotate(45deg);
+  opacity: 0;
+  animation: tear-drip 1.5s ease-in infinite;
+}
+
+.sad-whale__tear--left {
+  left: 64%;
+  top: 32%;
+  animation-delay: 0.2s;
+}
+
+.sad-whale__tear--right {
+  left: 73%;
+  top: 32%;
+  animation-delay: 0.8s;
+}
+
+@keyframes tear-drip {
+  0% { opacity: 0; transform: translateY(0) rotate(45deg) scale(0.6); }
+  15% { opacity: 1; transform: translateY(2px) rotate(45deg) scale(1); }
+  80% { opacity: 1; transform: translateY(24px) rotate(45deg) scale(1); }
+  100% { opacity: 0; transform: translateY(28px) rotate(45deg) scale(0.8); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jumpscare,
+  .jumpscare__logo {
+    animation: none;
+  }
+
+  .sad-whale__tear {
+    animation-duration: 3s;
   }
 }

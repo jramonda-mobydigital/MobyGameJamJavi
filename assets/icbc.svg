@@ -1,0 +1,13 @@
+<svg width="380" height="130" viewBox="0 0 380 130" xmlns="http://www.w3.org/2000/svg">
+  <text x="0" y="92" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="92" letter-spacing="-2" fill="#0a0a0a">ICBC</text>
+  <g transform="translate(255,10)">
+    <circle cx="55" cy="55" r="50" fill="none" stroke="#cc1b20" stroke-width="9"/>
+    <g fill="#cc1b20">
+      <rect x="30" y="24" width="10" height="62" />
+      <rect x="70" y="24" width="10" height="62" />
+      <rect x="24" y="30" width="62" height="10" />
+      <rect x="24" y="70" width="62" height="10" />
+      <rect x="42" y="42" width="26" height="26" fill="#fff"/>
+    </g>
+  </g>
+</svg>
