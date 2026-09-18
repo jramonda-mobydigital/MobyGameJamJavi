@@ -356,6 +356,15 @@ body {
   aspect-ratio: 126 / 158;
 }
 
+/* Mancuerna: si la come, la ballena se achica (ver CROISSANT_GROWTH /
+   DUMBBELL_SHRINK en movement.js). Del lado opuesto a los otros dos. */
+.sticker--dumbbell {
+  left: 78%;
+  top: 60%;
+  width: calc(var(--whale-size) * 0.44);
+  aspect-ratio: 200 / 120;
+}
+
 /* En vertical los stickers se corren a los bordes para no pisar la ballena */
 @media (max-width: 768px) {
   /* A lo ancho no entra a la derecha: la medialuna baja y se acerca */
@@ -374,6 +383,12 @@ body {
     left: 16%;
     top: 88%;
     width: calc(var(--whale-size) * 0.24);
+  }
+
+  .sticker--dumbbell {
+    left: 84%;
+    top: 50%;
+    width: calc(var(--whale-size) * 0.4);
   }
 }
 

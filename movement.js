@@ -9,7 +9,7 @@
   var stage = document.querySelector(".stage");
   var whale = document.querySelector(".whale");
   var foods = Array.prototype.slice.call(
-    document.querySelectorAll(".croissant, .sticker--coffee, .sticker--logo")
+    document.querySelectorAll(".croissant, .sticker--coffee, .sticker--logo, .sticker--dumbbell")
   );
   if (!stage || !whale || !foods.length) return;
 
@@ -21,17 +21,20 @@
   var LOGO_JUMPSCARE_AT = 3;   /* cuantos logos hacen falta para el susto de la VPN */
   var CROISSANT_GROWTH = 0.09; /* cuanto crece la ballena por cada medialuna */
   var CROISSANT_CATCH_AT = 12; /* cuantas medialunas hacen falta para que aparezca el arponero */
-  var SCALE_SMOOTH = 0.08;     /* que tan gradual es el crecimiento por cuadro */
+  var DUMBBELL_SHRINK = 0.09;  /* cuanto se achica la ballena por cada mancuerna */
+  var MIN_SCALE = 1;           /* piso: nunca mas chica que el tamano inicial */
+  var SCALE_SMOOTH = 0.08;     /* que tan gradual es el crecimiento/achique por cuadro */
 
   var jumpscare = document.getElementById("jumpscare");
   var catchScene = document.getElementById("catchScene");
   var frozen = false;
 
-  /* La ballena crece comiendo medialunas y, cuanto mas grande, mas lenta.
-     whaleScale es el objetivo; whaleScaleShown se acerca de a poco cada
-     cuadro para que el crecimiento se vea suave (ver step()). */
-  var whaleScale = 1;
-  var whaleScaleShown = 1;
+  /* La ballena crece comiendo medialunas (y se achica comiendo la
+     mancuerna) y, cuanto mas grande, mas lenta. whaleScale es el
+     objetivo; whaleScaleShown se acerca de a poco cada cuadro para que
+     el cambio se vea suave (ver step()). Nunca baja de MIN_SCALE. */
+  var whaleScale = MIN_SCALE;
+  var whaleScaleShown = MIN_SCALE;
 
   var keys = Object.create(null);
   var touchTarget = null; /* donde apunta el dedo mientras toca la pantalla */
@@ -44,10 +47,11 @@
     if (el.classList.contains("croissant")) return "croissant";
     if (el.classList.contains("sticker--coffee")) return "coffee";
     if (el.classList.contains("sticker--logo")) return "logo";
+    if (el.classList.contains("sticker--dumbbell")) return "dumbbell";
     return null;
   }
 
-  var counts = { croissant: 0, coffee: 0, logo: 0 };
+  var counts = { croissant: 0, coffee: 0, logo: 0, dumbbell: 0 };
 
   function bumpCount(el) {
     var type = foodType(el);
@@ -62,8 +66,12 @@
       if (counts.croissant >= CROISSANT_CATCH_AT) {
         triggerCatch();
       } else {
-        whaleScale = 1 + counts.croissant * CROISSANT_GROWTH;
+        whaleScale = Math.max(MIN_SCALE, whaleScale + CROISSANT_GROWTH);
       }
+    }
+
+    if (type === "dumbbell") {
+      whaleScale = Math.max(MIN_SCALE, whaleScale - DUMBBELL_SHRINK);
     }
   }
 

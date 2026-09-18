@@ -15,6 +15,7 @@
       <span class="hud__item"><img src="assets/croissant.png" alt="Medialunas comidas" /><span class="hud__count" data-count="croissant">0</span></span>
       <span class="hud__item"><img src="assets/coffee.svg" alt="Cafes comidos" /><span class="hud__count" data-count="coffee">0</span></span>
       <span class="hud__item"><img src="assets/logo.svg" alt="Logos comidos" /><span class="hud__count" data-count="logo">0</span></span>
+      <span class="hud__item"><img src="assets/dumbbell.svg" alt="Mancuernas comidas" /><span class="hud__count" data-count="dumbbell">0</span></span>
     </div>
 
     <!-- Fondo que se desplaza solo, para dar sensacion de avance tipo
@@ -59,6 +60,10 @@
     <!-- Stickers comestibles: la ballena tambien se los come al tocarlos -->
     <img class="sticker sticker--coffee" src="assets/coffee.svg" alt="" aria-hidden="true" data-node-id="93:177" />
     <img class="sticker sticker--logo" src="assets/logo.svg" alt="" aria-hidden="true" data-node-id="36:26" />
+
+    <!-- Mancuerna: si la come, la ballena se achica (nunca por debajo del
+         tamano inicial). Contrapesa el crecimiento de las medialunas. -->
+    <img class="sticker sticker--dumbbell" src="assets/dumbbell.svg" alt="" aria-hidden="true" />
   </main>
 
   <!-- Pantalla de susto: aparece cuando la ballena come el logo 3 veces -->
