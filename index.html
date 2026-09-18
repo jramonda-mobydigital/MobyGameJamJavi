@@ -10,13 +10,25 @@
 </head>
 <body>
   <main class="stage" data-node-id="9:2">
-    <!-- Contador de cuantos comio la ballena de cada cosa -->
+    <!-- Contador de cuantos comio la ballena de cada cosa. Los items de
+         niveles 1 y 2 arrancan ocultos (is-locked) y movement.js les
+         saca la clase cuando se desbloquea el nivel correspondiente. -->
     <div class="hud">
       <span class="hud__item"><img src="assets/croissant.png" alt="Medialunas comidas" /><span class="hud__count" data-count="croissant">0</span></span>
       <span class="hud__item"><img src="assets/coffee.svg" alt="Cafes comidos" /><span class="hud__count" data-count="coffee">0</span></span>
       <span class="hud__item"><img src="assets/logo.svg" alt="Logos comidos" /><span class="hud__count" data-count="logo">0</span></span>
       <span class="hud__item"><img src="assets/dumbbell.svg" alt="Mancuernas comidas" /><span class="hud__count" data-count="dumbbell">0</span></span>
+      <span class="hud__item is-locked" data-hud-level="1"><img src="assets/gitlab.png" alt="GitLab comidos" /><span class="hud__count" data-count="gitlab">0</span></span>
+      <span class="hud__item is-locked" data-hud-level="1"><img src="assets/linkedin.svg" alt="LinkedIn comidos" /><span class="hud__count" data-count="linkedin">0</span></span>
+      <span class="hud__item is-locked" data-hud-level="2"><img src="assets/java.svg" alt="Java comidos" /><span class="hud__count" data-count="java">0</span></span>
+      <span class="hud__item is-locked" data-hud-level="2"><img src="assets/php.svg" alt="PHP comidos" /><span class="hud__count" data-count="php">0</span></span>
+      <span class="hud__item is-locked" data-hud-level="2"><img src="assets/javascript.svg" alt="JavaScript comidos" /><span class="hud__count" data-count="javascript">0</span></span>
+      <span class="hud__item is-locked" data-hud-level="2"><img src="assets/python.svg" alt="Python comidos" /><span class="hud__count" data-count="python">0</span></span>
+      <span class="hud__item is-locked" data-hud-level="2"><img src="assets/rust.svg" alt="Rust comidos" /><span class="hud__count" data-count="rust">0</span></span>
     </div>
+
+    <!-- Nivel actual. Ver LEVELS en movement.js. -->
+    <div class="level-badge" id="levelBadge">SPRINT 0</div>
 
     <!-- Fondo que se desplaza solo, para dar sensacion de avance tipo
          side-scroller aunque la ballena este quieta -->
@@ -78,7 +90,26 @@
     <!-- Mancuerna: si la come, la ballena se achica (nunca por debajo del
          tamano inicial). Contrapesa el crecimiento de las medialunas. -->
     <img class="sticker sticker--dumbbell" src="assets/dumbbell.svg" alt="" aria-hidden="true" />
+
+    <!-- Nivel 1 (SCRUMING): ocultos hasta que se desbloquea el nivel,
+         movement.js los reubica en un punto alcanzable al aparecer. -->
+    <img class="sticker sticker--gitlab" src="assets/gitlab.png" alt="" aria-hidden="true" hidden />
+    <img class="sticker sticker--linkedin" src="assets/linkedin.svg" alt="" aria-hidden="true" hidden />
+
+    <!-- Nivel 2 (VIBE CODING): idem, ocultos hasta el desbloqueo. -->
+    <img class="sticker sticker--java" src="assets/java.svg" alt="" aria-hidden="true" hidden />
+    <img class="sticker sticker--php" src="assets/php.svg" alt="" aria-hidden="true" hidden />
+    <img class="sticker sticker--javascript" src="assets/javascript.svg" alt="" aria-hidden="true" hidden />
+    <img class="sticker sticker--python" src="assets/python.svg" alt="" aria-hidden="true" hidden />
+    <img class="sticker sticker--rust" src="assets/rust.svg" alt="" aria-hidden="true" hidden />
   </main>
+
+  <!-- Cartel de "subiste de nivel": aparece un rato y el juego sigue
+       corriendo atras (no es pantalla de game over). -->
+  <div class="level-banner" id="levelBanner" hidden>
+    <span class="level-banner__face" id="levelBannerFace"></span>
+    <p class="level-banner__text" id="levelBannerText"></p>
+  </div>
 
   <!-- Pantalla de susto: aparece cuando la ballena come el logo 3 veces -->
   <div class="jumpscare" id="jumpscare" hidden>

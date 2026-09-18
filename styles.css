@@ -71,8 +71,10 @@ body {
   position: absolute;
   top: max(16px, env(safe-area-inset-top, 0px));
   left: 16px;
+  right: 16px;
   z-index: 5;
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   pointer-events: none;
 }
@@ -94,6 +96,78 @@ body {
   width: 20px;
   height: 20px;
   object-fit: contain;
+}
+
+/* Items de niveles 1/2: invisibles hasta que movement.js saca esta clase */
+.hud__item.is-locked {
+  display: none;
+}
+
+/* --- Nivel actual ---------------------------------------------------------
+   Ver LEVELS en movement.js. Mismo lenguaje visual que el HUD. */
+.level-badge {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top, 0px));
+  right: 16px;
+  z-index: 5;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(3, 31, 57, 0.55);
+  backdrop-filter: blur(2px);
+  color: #ffd65a;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+/* --- Cartel de "subiste de nivel" ------------------------------------------
+   A diferencia de .jumpscare/.catch-scene, esto NO frena el juego: aparece
+   arriba, se lee, y se esconde solo (ver movement.js). */
+.level-banner {
+  position: fixed;
+  top: max(16px, env(safe-area-inset-top, 0px));
+  left: 50%;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(90vw, 480px);
+  padding: 14px 20px;
+  border-radius: 14px;
+  background: #123a5e;
+  color: #fff;
+  font-weight: 800;
+  font-size: clamp(13px, 2.6vw, 17px);
+  text-align: center;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  transform: translate(-50%, 0);
+  animation: level-banner-in 320ms cubic-bezier(0.22, 1.4, 0.4, 1);
+}
+
+.level-banner[hidden] {
+  display: none;
+}
+
+.level-banner__face {
+  font-size: clamp(22px, 4.5vw, 30px);
+  line-height: 1;
+}
+
+.level-banner__text {
+  margin: 0;
+}
+
+@keyframes level-banner-in {
+  from { transform: translate(-50%, -30px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-banner {
+    animation: none;
+  }
 }
 
 /* --- Fondo animado (estilo 2D / side-scroller) ---------------------------
@@ -408,6 +482,24 @@ body {
   top: 60%;
   width: calc(var(--whale-size) * 0.44);
   aspect-ratio: 200 / 120;
+}
+
+/* Alimentos de nivel 1 y 2: arrancan con "hidden" y el left/top de aca
+   no importa demasiado, porque movement.js los reubica (respawn) en un
+   punto alcanzable apenas se desbloquea el nivel. Solo hace falta un
+   tamano/posicion valido para que el primer respawn tenga de donde
+   partir. */
+.sticker--gitlab,
+.sticker--linkedin,
+.sticker--java,
+.sticker--php,
+.sticker--javascript,
+.sticker--python,
+.sticker--rust {
+  left: 50%;
+  top: 50%;
+  width: calc(var(--whale-size) * 0.34);
+  aspect-ratio: 1;
 }
 
 /* En vertical los stickers se corren a los bordes para no pisar la ballena */

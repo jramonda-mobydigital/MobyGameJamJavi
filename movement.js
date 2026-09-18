@@ -9,7 +9,11 @@
   var stage = document.querySelector(".stage");
   var whale = document.querySelector(".whale");
   var foods = Array.prototype.slice.call(
-    document.querySelectorAll(".croissant, .sticker--coffee, .sticker--logo, .sticker--dumbbell")
+    document.querySelectorAll(
+      ".croissant, .sticker--coffee, .sticker--logo, .sticker--dumbbell, " +
+      ".sticker--gitlab, .sticker--linkedin, " +
+      ".sticker--java, .sticker--php, .sticker--javascript, .sticker--python, .sticker--rust"
+    )
   );
   if (!stage || !whale || !foods.length) return;
 
@@ -25,9 +29,25 @@
   var MIN_SCALE = 1;           /* piso: nunca mas chica que el tamano inicial */
   var SCALE_SMOOTH = 0.08;     /* que tan gradual es el crecimiento/achique por cuadro */
   var ABS_MAX = 6;             /* mancuernas de mas (con medialunas en 0) para abdominales al 100% */
+  var COFFEE_LEVEL_UP_AT = 6;  /* cafes para pasar de SPRINT 0 a SCRUMING */
+  var SCRUM_LEVEL_UP_AT = 15;  /* gitlab + linkedin para pasar a VIBE CODING */
+  var LEVEL_BANNER_MS = 2800;  /* cuanto dura el cartel de "subiste de nivel" */
+
+  var LEVELS = ["SPRINT 0", "SCRUMING", "VIBE CODING"];
+  var FOOD_LEVEL = {
+    croissant: 0, coffee: 0, logo: 0, dumbbell: 0,
+    gitlab: 1, linkedin: 1,
+    java: 2, php: 2, javascript: 2, python: 2, rust: 2
+  };
+  var level = 0;
 
   var jumpscare = document.getElementById("jumpscare");
   var catchScene = document.getElementById("catchScene");
+  var levelBadge = document.getElementById("levelBadge");
+  var levelBanner = document.getElementById("levelBanner");
+  var levelBannerFace = document.getElementById("levelBannerFace");
+  var levelBannerText = document.getElementById("levelBannerText");
+  var levelBannerTimer = 0;
   var frozen = false;
 
   /* La ballena crece comiendo medialunas (y se achica comiendo la
@@ -58,10 +78,21 @@
     if (el.classList.contains("sticker--coffee")) return "coffee";
     if (el.classList.contains("sticker--logo")) return "logo";
     if (el.classList.contains("sticker--dumbbell")) return "dumbbell";
+    if (el.classList.contains("sticker--gitlab")) return "gitlab";
+    if (el.classList.contains("sticker--linkedin")) return "linkedin";
+    if (el.classList.contains("sticker--java")) return "java";
+    if (el.classList.contains("sticker--php")) return "php";
+    if (el.classList.contains("sticker--javascript")) return "javascript";
+    if (el.classList.contains("sticker--python")) return "python";
+    if (el.classList.contains("sticker--rust")) return "rust";
     return null;
   }
 
-  var counts = { croissant: 0, coffee: 0, logo: 0, dumbbell: 0 };
+  var counts = {
+    croissant: 0, coffee: 0, logo: 0, dumbbell: 0,
+    gitlab: 0, linkedin: 0,
+    java: 0, php: 0, javascript: 0, python: 0, rust: 0
+  };
 
   function bumpCount(el) {
     var type = foodType(el);
@@ -92,6 +123,55 @@
         applyAbs();
       }
     }
+
+    if (type === "coffee" && level === 0 && counts.coffee >= COFFEE_LEVEL_UP_AT) {
+      advanceLevel(1, "¡FELICITACIONES, FINALIZASTE EL SPRINT 0!!", "😄");
+    }
+
+    if ((type === "gitlab" || type === "linkedin") && level === 1 &&
+        counts.gitlab + counts.linkedin >= SCRUM_LEVEL_UP_AT) {
+      advanceLevel(2, "YA SOS SCRUM MASTER, ahora quemá tokens vibe codeando", "🚀");
+    }
+  }
+
+  /* Sube de nivel: cambia el titulo, muestra el cartel (sin frenar el
+     juego) y desbloquea los alimentos de ese nivel, reapareciendolos
+     ya mismo en un punto alcanzable. */
+  function advanceLevel(next, message, face) {
+    if (next <= level) return;
+    level = next;
+    if (levelBadge) levelBadge.textContent = LEVELS[level] || "";
+
+    document.querySelectorAll('.hud__item[data-hud-level="' + level + '"]').forEach(function (item) {
+      item.classList.remove("is-locked");
+    });
+
+    foods.forEach(function (el) {
+      if (FOOD_LEVEL[foodType(el)] !== level) return;
+      el.hidden = false;
+      respawn(el);
+    });
+
+    showLevelBanner(message, face);
+  }
+
+  function showLevelBanner(message, face) {
+    if (!levelBanner) return;
+    if (levelBannerTimer) window.clearTimeout(levelBannerTimer);
+
+    if (levelBannerText) levelBannerText.textContent = message;
+    if (levelBannerFace) levelBannerFace.textContent = face || "";
+
+    /* Sacar y volver a poner "hidden" reinicia la animacion de entrada
+       aunque el cartel ya estuviera visible por un aviso anterior. */
+    levelBanner.hidden = true;
+    void levelBanner.offsetWidth;
+    levelBanner.hidden = false;
+
+    levelBannerTimer = window.setTimeout(function () {
+      levelBanner.hidden = true;
+      levelBannerTimer = 0;
+    }, LEVEL_BANNER_MS);
   }
 
   /* Tres logos y aparece la pantalla de la VPN: se congela el juego hasta
@@ -288,7 +368,7 @@
   function checkCollisions() {
     var m = mouthPoint();
     foods.forEach(function (el) {
-      if (el.classList.contains("is-eaten") || el.classList.contains("is-hidden")) return;
+      if (el.hidden || el.classList.contains("is-eaten") || el.classList.contains("is-hidden")) return;
       var c = center(el);
       if (Math.hypot(c.x - m.x, c.y - m.y) <= m.size * BITE_RADIUS) {
         bumpCount(el);
