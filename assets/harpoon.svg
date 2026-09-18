@@ -1,0 +1,21 @@
+<svg width="340" height="120" viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- soga enrollada -->
+  <circle cx="56" cy="86" r="22" fill="none" stroke="#f2f2f2" stroke-width="5"/>
+  <circle cx="56" cy="86" r="13" fill="none" stroke="#f2f2f2" stroke-width="5"/>
+  <path d="M58 65 Q92 48 142 58" stroke="#f2f2f2" stroke-width="3" fill="none"/>
+
+  <!-- tanque -->
+  <rect x="148" y="44" width="62" height="30" rx="14" fill="#dfeaf0" stroke="#b7c6ce" stroke-width="2"/>
+  <circle cx="179" cy="59" r="6" fill="#b7c6ce"/>
+
+  <!-- culata de madera -->
+  <path d="M36 70 L150 54 L150 76 L58 96 Z" fill="#a5673f"/>
+  <path d="M92 74 q6 20 24 18" stroke="#6b4a30" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+  <!-- cano -->
+  <rect x="150" y="52" width="150" height="11" rx="4" fill="#8b98a6"/>
+
+  <!-- punta del arpon -->
+  <path d="M300 44 L332 57.5 L300 71 Z" fill="#b6c0cb"/>
+  <path d="M300 49 L317 57.5 L300 66 Z" fill="#8b98a6"/>
+</svg>

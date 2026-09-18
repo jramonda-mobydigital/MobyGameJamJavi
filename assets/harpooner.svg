@@ -1,0 +1,46 @@
+<svg width="200" height="320" viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">
+  <!-- botas -->
+  <rect x="68" y="278" width="28" height="30" rx="7" fill="#8a94a6"/>
+  <rect x="104" y="278" width="28" height="30" rx="7" fill="#8a94a6"/>
+
+  <!-- piernas del impermeable -->
+  <rect x="66" y="208" width="32" height="80" rx="10" fill="#ffcb2b"/>
+  <rect x="102" y="208" width="32" height="80" rx="10" fill="#ffcb2b"/>
+
+  <!-- torso -->
+  <rect x="54" y="138" width="92" height="92" rx="22" fill="#ffcb2b"/>
+
+  <!-- remera a rayas asomando -->
+  <rect x="80" y="148" width="40" height="36" fill="#f4f4f4"/>
+  <rect x="80" y="150" width="40" height="7" fill="#1c3f6e"/>
+  <rect x="80" y="165" width="40" height="7" fill="#1c3f6e"/>
+  <rect x="80" y="180" width="40" height="7" fill="#1c3f6e"/>
+
+  <!-- brazo izquierdo (sostiene el arpon) -->
+  <rect x="26" y="150" width="26" height="72" rx="13" fill="#ffcb2b"/>
+  <circle cx="39" cy="224" r="15" fill="#c7ccd4"/>
+
+  <!-- brazo derecho (sostiene la soga) -->
+  <rect x="148" y="150" width="26" height="72" rx="13" fill="#ffcb2b"/>
+  <circle cx="161" cy="224" r="15" fill="#c7ccd4"/>
+
+  <!-- soga enrollada -->
+  <circle cx="161" cy="256" r="22" fill="none" stroke="#f2f2f2" stroke-width="5"/>
+  <circle cx="161" cy="256" r="13" fill="none" stroke="#f2f2f2" stroke-width="5"/>
+
+  <!-- cabeza -->
+  <circle cx="100" cy="94" r="43" fill="#f2b892"/>
+  <circle cx="85" cy="97" r="4.5" fill="#2b2b2b"/>
+  <circle cx="115" cy="97" r="4.5" fill="#2b2b2b"/>
+  <path d="M83 111 Q100 123 117 111" stroke="#2b2b2b" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+
+  <!-- sombrero de lluvia -->
+  <path d="M50 76 Q100 26 150 76 L150 64 Q100 40 50 64 Z" fill="#ffcb2b"/>
+  <ellipse cx="100" cy="64" rx="62" ry="13" fill="#ffcb2b"/>
+
+  <!-- arpon en diagonal -->
+  <g transform="rotate(-34 38 150)">
+    <rect x="-30" y="145" width="200" height="9" rx="3" fill="#c7ccd4"/>
+    <path d="M168 140 L196 149.5 L168 159 Z" fill="#9aa3b0"/>
+  </g>
+</svg>

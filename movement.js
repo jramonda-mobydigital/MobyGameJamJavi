@@ -13,15 +13,25 @@
   );
   if (!stage || !whale || !foods.length) return;
 
-  var SPEED = 720;         /* px/s de la ballena */
+  var SPEED = 720;         /* px/s de la ballena, con --whale-scale en 1 */
   var MOUTH_X = 0.680;     /* punto de la boca, en fraccion de la caja de la ballena */
   var MOUTH_Y = 0.430;
   var BITE_RADIUS = 0.34;  /* fraccion del ancho de la ballena: alcance del mordisco */
   var SPAWN_MARGIN = 24;   /* px de aire contra los bordes del stage al reaparecer */
-  var LOGO_JUMPSCARE_AT = 3; /* cuantos logos hacen falta para el susto de la VPN */
+  var LOGO_JUMPSCARE_AT = 3;   /* cuantos logos hacen falta para el susto de la VPN */
+  var CROISSANT_GROWTH = 0.09; /* cuanto crece la ballena por cada medialuna */
+  var CROISSANT_CATCH_AT = 12; /* cuantas medialunas hacen falta para que aparezca el arponero */
+  var SCALE_SMOOTH = 0.08;     /* que tan gradual es el crecimiento por cuadro */
 
   var jumpscare = document.getElementById("jumpscare");
+  var catchScene = document.getElementById("catchScene");
   var frozen = false;
+
+  /* La ballena crece comiendo medialunas y, cuanto mas grande, mas lenta.
+     whaleScale es el objetivo; whaleScaleShown se acerca de a poco cada
+     cuadro para que el crecimiento se vea suave (ver step()). */
+  var whaleScale = 1;
+  var whaleScaleShown = 1;
 
   var keys = Object.create(null);
   var touchTarget = null; /* donde apunta el dedo mientras toca la pantalla */
@@ -47,6 +57,14 @@
     if (out) out.textContent = counts[type];
 
     if (type === "logo" && counts.logo >= LOGO_JUMPSCARE_AT) triggerJumpscare();
+
+    if (type === "croissant") {
+      if (counts.croissant >= CROISSANT_CATCH_AT) {
+        triggerCatch();
+      } else {
+        whaleScale = 1 + counts.croissant * CROISSANT_GROWTH;
+      }
+    }
   }
 
   /* Tres logos y aparece la pantalla de la VPN: se congela el juego hasta
@@ -55,7 +73,18 @@
     if (frozen) return;
     frozen = true;
     keys = Object.create(null);
+    touchTarget = null;
     if (jumpscare) jumpscare.hidden = false;
+  }
+
+  /* Doce medialunas y aparece el arponero: mismo esquema de freeze +
+     reinicio que la pantalla de la VPN. */
+  function triggerCatch() {
+    if (frozen) return;
+    frozen = true;
+    keys = Object.create(null);
+    touchTarget = null;
+    if (catchScene) catchScene.hidden = false;
   }
 
   var frame = 0;
@@ -75,9 +104,14 @@
     event.preventDefault();
   }
 
-  /* En el celu no hay Enter: un toque en la pantalla de susto reinicia igual */
+  /* En el celu no hay Enter: un toque en la pantalla reinicia igual */
   if (jumpscare) {
     jumpscare.addEventListener("pointerdown", function () {
+      if (frozen) location.reload();
+    });
+  }
+  if (catchScene) {
+    catchScene.addEventListener("pointerdown", function () {
       if (frozen) location.reload();
     });
   }
@@ -243,20 +277,27 @@
     var dt = last ? (ts - last) / 1000 : 0;
     last = ts;
 
+    /* El crecimiento se acerca de a poco al objetivo (no salta de golpe)
+       y, cuanto mas grande esta la ballena, mas lento se mueve. */
+    whaleScaleShown += (whaleScale - whaleScaleShown) * SCALE_SMOOTH;
+    if (Math.abs(whaleScale - whaleScaleShown) < 0.001) whaleScaleShown = whaleScale;
+    whale.style.setProperty("--whale-scale", whaleScaleShown.toFixed(3));
+    var speed = SPEED / whaleScaleShown;
+
     var dx = (keys.ArrowRight ? 1 : 0) - (keys.ArrowLeft ? 1 : 0);
     var dy = (keys.ArrowDown ? 1 : 0) - (keys.ArrowUp ? 1 : 0);
 
     if (dx || dy) {
       var len = Math.hypot(dx, dy) || 1;
-      moveWhale((dx / len) * SPEED * dt, (dy / len) * SPEED * dt);
+      moveWhale((dx / len) * speed * dt, (dy / len) * speed * dt);
     } else if (touchTarget) {
       var c = center(whale);
       var tx = touchTarget.x - c.x;
       var ty = touchTarget.y - c.y;
       var dist = Math.hypot(tx, ty);
       if (dist > 4) {
-        var reach = Math.min(SPEED * dt, dist);
-        moveWhale((tx / dist) * reach, (ty / dist) * reach);
+        var step_ = Math.min(speed * dt, dist);
+        moveWhale((tx / dist) * step_, (ty / dist) * step_);
       }
     }
 
