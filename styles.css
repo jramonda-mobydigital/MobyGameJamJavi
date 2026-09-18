@@ -33,8 +33,10 @@ body {
   position: relative;
   width: 100%;
   min-height: 100svh;
-  /* Todo lo que acompana a la ballena se mide contra este tamano */
-  --whale-size: clamp(240px, 30vw, 432px);
+  /* Todo lo que acompana a la ballena se mide contra este tamano.
+     Mas chica: que quepa cerca de los bordes y pueda comer lo que
+     aparece ahi (ver el calculo de alcance en movement.js). */
+  --whale-size: clamp(180px, 22vw, 320px);
   overflow: hidden;
   /* El dedo mueve a la ballena (ver movement.js): que el toque no
      dispare scroll/zoom del navegador */
@@ -222,7 +224,7 @@ body {
    cada pieza: si van antes, la regla de escritorio los pisa. */
 @media (max-width: 768px) {
   .stage {
-    --whale-size: clamp(220px, 62vw, 340px);
+    --whale-size: clamp(150px, 46vw, 260px);
   }
 }
 

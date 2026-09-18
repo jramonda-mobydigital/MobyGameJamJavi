@@ -163,9 +163,29 @@
     return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   }
 
-  /* Elige un lugar nuevo dentro del stage, lejos de la boca, para que el
-     item recien comido reaparezca (evita reubicarlo justo donde ya lo
-     comieron). */
+  /* Hasta donde llega la boca de la ballena, moviendose por todo el stage.
+     El centro de la ballena esta limitado a un rango (mismo clamp que
+     moveWhale); la boca esta corrida de ese centro (MOUTH_X/MOUTH_Y) y el
+     mordisco todavia suma un margen (BITE_RADIUS). Cualquier punto fuera
+     de este rectangulo es, directamente, imposible de comer. */
+  function reach() {
+    var stageRect = stage.getBoundingClientRect();
+    var whaleRect = whale.getBoundingClientRect();
+    var w = whaleRect.width;
+    var h = whaleRect.height;
+    var bite = w * BITE_RADIUS;
+
+    return {
+      minX: stageRect.left + w * MOUTH_X - bite,
+      maxX: stageRect.right - w * (1 - MOUTH_X) + bite,
+      minY: stageRect.top + h * MOUTH_Y - bite,
+      maxY: stageRect.bottom - h * (1 - MOUTH_Y) + bite
+    };
+  }
+
+  /* Elige un lugar nuevo para que el item recien comido reaparezca: dentro
+     del stage, lejos de la boca (para no reubicarlo justo donde ya lo
+     comieron) y siempre alcanzable por la ballena. */
   function respawn(el) {
     var stageRect = stage.getBoundingClientRect();
     var rect = el.getBoundingClientRect();
@@ -173,10 +193,22 @@
     var baseX = rect.left + rect.width / 2 - offset.x;
     var baseY = rect.top + rect.height / 2 - offset.y;
 
-    var minX = stageRect.left + rect.width / 2 + SPAWN_MARGIN;
-    var maxX = stageRect.right - rect.width / 2 - SPAWN_MARGIN;
-    var minY = stageRect.top + rect.height / 2 + SPAWN_MARGIN;
-    var maxY = stageRect.bottom - rect.height / 2 - SPAWN_MARGIN;
+    var r = reach();
+    var minX = Math.max(stageRect.left + rect.width / 2 + SPAWN_MARGIN, r.minX);
+    var maxX = Math.min(stageRect.right - rect.width / 2 - SPAWN_MARGIN, r.maxX);
+    var minY = Math.max(stageRect.top + rect.height / 2 + SPAWN_MARGIN, r.minY);
+    var maxY = Math.min(stageRect.bottom - rect.height / 2 - SPAWN_MARGIN, r.maxY);
+
+    /* Si el alcance es mas chico que el margen (pantalla muy angosta), que
+       no rompa: usar el rango del stage entero como respaldo. */
+    if (minX > maxX) {
+      minX = stageRect.left + rect.width / 2 + SPAWN_MARGIN;
+      maxX = stageRect.right - rect.width / 2 - SPAWN_MARGIN;
+    }
+    if (minY > maxY) {
+      minY = stageRect.top + rect.height / 2 + SPAWN_MARGIN;
+      maxY = stageRect.bottom - rect.height / 2 - SPAWN_MARGIN;
+    }
 
     var m = mouthPoint();
     var target = { x: baseX, y: baseY };
