@@ -24,6 +24,7 @@
   var frozen = false;
 
   var keys = Object.create(null);
+  var touchTarget = null; /* donde apunta el dedo mientras toca la pantalla */
   var whaleOffset = { x: 0, y: 0 };
   var foodOffsets = new Map();
   foods.forEach(function (el) { foodOffsets.set(el, { x: 0, y: 0 }); });
@@ -74,6 +75,13 @@
     event.preventDefault();
   }
 
+  /* En el celu no hay Enter: un toque en la pantalla de susto reinicia igual */
+  if (jumpscare) {
+    jumpscare.addEventListener("pointerdown", function () {
+      if (frozen) location.reload();
+    });
+  }
+
   function onKeyUp(event) {
     if (!isArrow(event.key)) return;
     keys[event.key] = false;
@@ -81,7 +89,33 @@
 
   window.addEventListener("keydown", onKeyDown);
   window.addEventListener("keyup", onKeyUp);
-  window.addEventListener("blur", function () { keys = Object.create(null); });
+  window.addEventListener("blur", function () {
+    keys = Object.create(null);
+    touchTarget = null;
+  });
+
+  /* Desde el celu: mientras el dedo toca la pantalla, la ballena camina
+     hacia ese punto (mismo esquema continuo que las flechas). El mouse no
+     se toca: solo pointerType "touch" mueve. */
+  function onPointerDown(event) {
+    if (event.pointerType !== "touch" || frozen) return;
+    touchTarget = { x: event.clientX, y: event.clientY };
+  }
+
+  function onPointerMove(event) {
+    if (event.pointerType !== "touch" || !touchTarget) return;
+    touchTarget = { x: event.clientX, y: event.clientY };
+  }
+
+  function onPointerEnd(event) {
+    if (event.pointerType !== "touch") return;
+    touchTarget = null;
+  }
+
+  stage.addEventListener("pointerdown", onPointerDown);
+  window.addEventListener("pointermove", onPointerMove);
+  window.addEventListener("pointerup", onPointerEnd);
+  window.addEventListener("pointercancel", onPointerEnd);
 
   function applyWhale() {
     whale.style.setProperty("--move-x", whaleOffset.x.toFixed(1) + "px");
@@ -183,6 +217,15 @@
     if (dx || dy) {
       var len = Math.hypot(dx, dy) || 1;
       moveWhale((dx / len) * SPEED * dt, (dy / len) * SPEED * dt);
+    } else if (touchTarget) {
+      var c = center(whale);
+      var tx = touchTarget.x - c.x;
+      var ty = touchTarget.y - c.y;
+      var dist = Math.hypot(tx, ty);
+      if (dist > 4) {
+        var reach = Math.min(SPEED * dt, dist);
+        moveWhale((tx / dist) * reach, (ty / dist) * reach);
+      }
     }
 
     checkCollisions();

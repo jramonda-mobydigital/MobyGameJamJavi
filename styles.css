@@ -36,6 +36,9 @@ body {
   /* Todo lo que acompana a la ballena se mide contra este tamano */
   --whale-size: clamp(240px, 30vw, 432px);
   overflow: hidden;
+  /* El dedo mueve a la ballena (ver movement.js): que el toque no
+     dispare scroll/zoom del navegador */
+  touch-action: none;
   background: linear-gradient(
     180deg,
     var(--sea-top) var(--sea-stop),
