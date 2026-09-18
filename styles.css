@@ -29,6 +29,23 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* --- Aviso de reinicio: "Enter" en desktop, "tocá la pantalla" en el
+   celu (jumpscare/catch-scene). pointer:coarse es la misma señal de
+   touch que ya usa movement.js para mover a la ballena. */
+.hint-touch {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .hint-desktop {
+    display: none;
+  }
+
+  .hint-touch {
+    display: inline;
+  }
+}
+
 .stage {
   position: relative;
   width: 100%;
@@ -504,9 +521,28 @@ body {
   transform: rotate(-7deg);
 }
 
-.sad-whale img {
+.sad-whale__art {
   display: block;
   width: 100%;
+}
+
+/* Mismas coordenadas que .whale__eye--left/--right (ver mas arriba),
+   pero fijas: aca no hace falta que sigan el cursor. */
+.sad-whale__eye {
+  position: absolute;
+  width: 2.029%;
+  height: 4.942%;
+  transform: translate(-50%, -50%);
+}
+
+.sad-whale__eye--left {
+  left: 66.84%;
+  top: 30.66%;
+}
+
+.sad-whale__eye--right {
+  left: 74.39%;
+  top: 30.54%;
 }
 
 .sad-whale__tear {

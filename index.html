@@ -85,11 +85,18 @@
     <img class="jumpscare__logo" src="assets/icbc.svg" alt="Logo de ICBC" />
     <p class="jumpscare__message">Perdiste tu d&iacute;a<br />intentando conectar a la VPN</p>
     <div class="sad-whale" aria-hidden="true">
-      <img src="assets/whale.png" alt="" />
+      <img class="sad-whale__art" src="assets/whale.png" alt="" />
+      <!-- whale.png no trae los ojos pintados: en el juego los pone
+           eyes.js como capa aparte, aca van fijos en su posicion. -->
+      <img class="sad-whale__eye sad-whale__eye--left" src="assets/eye-left.svg" alt="" />
+      <img class="sad-whale__eye sad-whale__eye--right" src="assets/eye-right.svg" alt="" />
       <span class="sad-whale__tear sad-whale__tear--left"></span>
       <span class="sad-whale__tear sad-whale__tear--right"></span>
     </div>
-    <p class="jumpscare__hint">Presion&aacute; <kbd>Enter</kbd> para comenzar de nuevo</p>
+    <p class="jumpscare__hint">
+      <span class="hint-desktop">Presion&aacute; <kbd>Enter</kbd> para comenzar de nuevo</span>
+      <span class="hint-touch">Toc&aacute; la pantalla para comenzar de nuevo</span>
+    </p>
   </div>
 
   <!-- Escena del arponero: aparece cuando la ballena come 12 medialunas -->
@@ -98,7 +105,10 @@
     <img class="catch-scene__harpooner" src="assets/harpooner.svg" alt="Arponero" />
     <div class="catch-scene__sign">
       <p class="catch-scene__message">Afloj&aacute;le a las harinas,<br />volv&eacute;s a empezar</p>
-      <p class="catch-scene__hint">Presion&aacute; <kbd>Enter</kbd> para comenzar de nuevo</p>
+      <p class="catch-scene__hint">
+        <span class="hint-desktop">Presion&aacute; <kbd>Enter</kbd> para comenzar de nuevo</span>
+        <span class="hint-touch">Toc&aacute; la pantalla para comenzar de nuevo</span>
+      </p>
     </div>
   </div>
 
