@@ -24,6 +24,7 @@
   var DUMBBELL_SHRINK = 0.09;  /* cuanto se achica la ballena por cada mancuerna */
   var MIN_SCALE = 1;           /* piso: nunca mas chica que el tamano inicial */
   var SCALE_SMOOTH = 0.08;     /* que tan gradual es el crecimiento/achique por cuadro */
+  var ABS_MAX = 6;             /* mancuernas de mas (con medialunas en 0) para abdominales al 100% */
 
   var jumpscare = document.getElementById("jumpscare");
   var catchScene = document.getElementById("catchScene");
@@ -35,6 +36,15 @@
      el cambio se vea suave (ver step()). Nunca baja de MIN_SCALE. */
   var whaleScale = MIN_SCALE;
   var whaleScaleShown = MIN_SCALE;
+
+  /* Una vez que las medialunas llegan a 0, seguir comiendo mancuerna ya
+     no tiene mas contador para descontar: en cambio, le va marcando
+     abdominales de a poco (ver .whale__abs en el HTML/CSS). */
+  var absExtra = 0;
+
+  function applyAbs() {
+    whale.style.setProperty("--abs", (absExtra / ABS_MAX).toFixed(3));
+  }
 
   var keys = Object.create(null);
   var touchTarget = null; /* donde apunta el dedo mientras toca la pantalla */
@@ -72,6 +82,15 @@
 
     if (type === "dumbbell") {
       whaleScale = Math.max(MIN_SCALE, whaleScale - DUMBBELL_SHRINK);
+
+      if (counts.croissant > 0) {
+        counts.croissant--;
+        var croissantOut = document.querySelector('.hud__count[data-count="croissant"]');
+        if (croissantOut) croissantOut.textContent = counts.croissant;
+      } else if (absExtra < ABS_MAX) {
+        absExtra++;
+        applyAbs();
+      }
     }
   }
 

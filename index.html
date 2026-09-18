@@ -33,6 +33,20 @@
       <div class="whale__body">
         <img class="whale__art" src="assets/whale.png" alt="Ballena de Moby Game Jam" data-node-id="20:21" />
 
+        <!-- Abdominales: se van formando de a poco si sigue comiendo
+             mancuerna con el contador de medialunas ya en 0 (ver
+             movement.js). Invisibles hasta ahi (--abs en 0).
+             Coordenadas calcadas sobre la curva de la panza (la misma
+             zona crema donde whale.png ya dibuja los pliegues), no un
+             rectangulo prolijo: acompanan el barrido diagonal del
+             cuerpo redondo, igual que esos pliegues. -->
+        <svg class="whale__abs" viewBox="0 0 432 408" aria-hidden="true" focusable="false">
+          <path class="whale__abs-line" d="M280 226 Q248 312 276 396" />
+          <path class="whale__abs-line" d="M240 259 Q281 272 321 256" />
+          <path class="whale__abs-line" d="M221 323 Q282 340 341 319" />
+          <path class="whale__abs-line" d="M236 379 Q286 397 356 373" />
+        </svg>
+
         <!-- Cavidad y lengua. El labio superior lo pone el propio PNG. -->
         <svg class="whale__mouth" viewBox="0 0 432 408" aria-hidden="true" focusable="false">
           <defs>

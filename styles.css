@@ -171,6 +171,34 @@ body {
   filter: drop-shadow(-5px 9px 12.5px rgba(0, 0, 0, 0.18));
 }
 
+/* --- Abdominales (a fuerza de mancuerna) ---------------------------------
+   --abs (en .whale, ver movement.js) va de 0 a 1: arranca invisible y se
+   va marcando de a poco. Coordenadas estimadas sobre la panza de
+   whale.png sin calibrar pixel a pixel, como una silueta liviana. */
+.whale__abs {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  opacity: var(--abs, 0);
+  transition: opacity 260ms ease-out;
+}
+
+.whale__abs-line {
+  fill: none;
+  stroke: rgba(60, 40, 25, 0.55);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .whale__abs {
+    transition: none;
+  }
+}
+
 /* --- Boca ---------------------------------------------------------------
    El labio superior sigue siendo el trazo de whale.png; esta capa solo
    dibuja la cavidad que cuelga debajo y la lengua. */
